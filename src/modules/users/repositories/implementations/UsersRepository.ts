@@ -18,19 +18,18 @@ export class UsersRepository implements IUsersRepository {
     // Complete usando ORM
     const user = await this.repository.findOneOrFail(user_id, {relations: ["games"]});
 
-    //console.log(user);
-
     return user;
   }
 
   async findAllUsersOrderedByFirstName(): Promise<User[]> {
     // Complete usando raw query
-    return this.repository.query(
+
+    const users = this.repository.query(
       `select *
        from users use
-       inner join users_games_games ugg on ugg.usersId = use.id
-       inner join games gam on ugg.gamesId = gam.id
        order by use.first_name`);
+    
+    return users;
   }
 
   async findUserByFullName({
@@ -47,8 +46,6 @@ export class UsersRepository implements IUsersRepository {
               use.created_at,
               use.updated_at
        from users use
-       inner join users_games_games ugg on ugg.usersId = use.id
-       inner join games gam on ugg.gamesId = gam.id
        where lower(use.first_name) = $1
          and lower(use.last_name) = $2`, [first_name.toLowerCase(), last_name.toLowerCase()]);
 
